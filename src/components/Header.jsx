@@ -21,7 +21,7 @@ const Header = () => {
     navigate("/");
   };
   return (
-    <div className="w-full md:max-w-7xl mx-auto bg-white flex justify-between items-center py-3 px-5 rounded-lg shadow-md relative">
+    <div className="w-full md:max-w-7xl mx-auto bg-white flex justify-between items-center py-3 px-5 rounded-lg relative">
       {/* Logo and Title */}
       <Link to="/profile-details" className="flex gap-2 items-center">
         <BsLink className="text-3xl bg-purple-800 text-white p-1 rounded" />

@@ -3,7 +3,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import { Toaster } from "react-hot-toast";
 import EditProfile from "./pages/EditProfile";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { useEffect, useState } from "react";
 import authService from "./appwrite/auth.service";
@@ -11,9 +11,11 @@ import { Loader } from "./components/Loader";
 import { login, logout } from "./store/auth.slice";
 import { ProtectedLayout, RedirectLayout } from "./components/AuthLayout";
 
+
 const App = () => {
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
+
 
   // Check if user is logged in
   useEffect(() => {
@@ -22,6 +24,8 @@ const App = () => {
       .then((user) => (user ? dispatch(login({ user })) : dispatch(logout())))
       .catch(() => dispatch(logout()))
       .finally(() => setLoading(false));
+
+    
   }, []);
 
   // Render loading page

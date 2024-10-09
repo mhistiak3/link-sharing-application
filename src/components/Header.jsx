@@ -8,6 +8,7 @@ import { FiMenu, FiX } from "react-icons/fi";
 import { useDispatch } from "react-redux";
 import authService from "../appwrite/auth.service";
 import { logout } from "../store/auth.slice";
+import { getProfile } from "../store/profile.slice";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -18,6 +19,7 @@ const Header = () => {
     // Handle logout logic
     await authService.logout();
     dispatch(logout());
+    dispatch(getProfile({ profile: null }));
     navigate("/");
   };
   return (

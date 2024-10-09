@@ -1,28 +1,108 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CiImageOn } from "react-icons/ci";
 import { useSelector } from "react-redux";
+import profileService from "../appwrite/profile.service";
+import toast from "react-hot-toast";
 
-const ProfileForm = () => {
+const ProfileForm = ({ profileData }) => {
   const user = useSelector((state) => state.auth.user);
+  const profile = useSelector((state) => state.profile.profile);
+ 
+  
   const [file, setFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null); // State for image preview
   const [firstName, setFirstName] = useState(user?.name);
   const [lastName, setLastName] = useState(user?.name);
   const [email, setEmail] = useState(user?.email);
+  const [loading, setLoading] = useState(false);
 
   const handleImageUpload = (e) => {
     const uploadedFile = e.target.files[0];
     setFile(uploadedFile);
     if (uploadedFile) {
       const previewUrl = URL.createObjectURL(uploadedFile);
-      setImagePreview(previewUrl); // Set preview URL for the image
+      setImagePreview(previewUrl);
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(firstName, lastName, email, file);
+    try {
+      setLoading(true);
+
+      if (profile) {
+        // update Profile
+        if (file) {
+            let isDelete = true;
+          if (profile?.profileImage) {
+             isDelete = await profileService.deleteFile(
+              profile?.profileImage
+            );
+          }
+
+          if (isDelete) {
+            const fileId = await profileService.uploadFile(file);
+            const profile = await profileService.updateProfile(user.$id, {
+              firstName,
+              lastName,
+              email,
+              profileImage: fileId.$id,
+            });
+            if (profile) toast.success("Profile updated successfully");
+            else toast.error("Failed to update profile");
+          }
+        } else {
+          const profile = await profileService.updateProfile(user.$id, {
+            firstName,
+            lastName,
+            email,
+          });
+          if (profile) toast.success("Profile updated successfully");
+          else toast.error("Failed to update profile");
+        }
+      } else {
+        // create Profile
+        if (file) {
+          const fileId = await profileService.uploadFile(file);
+
+          // Create profile
+          const profile = await profileService.createProfile({
+            firstName,
+            lastName,
+            email,
+            userId: user?.$id,
+            profileImage: fileId.$id,
+          });
+
+          if (profile) toast.success("Profile created successfully");
+          else toast.error("Failed to create profile");
+        } else {
+          const profile = await profileService.createProfile({
+            firstName,
+            lastName,
+            email,
+            userId: user?.$id,
+          });
+          if (profile) toast.success("Profile created successfully");
+          else toast.error("Failed to create profile");
+        }
+      }
+
+      setLoading(false);
+    } catch (error) {
+      toast.error(error.message);
+      setLoading(false);
+    }
   };
+
+  useEffect(() => {
+    if (profile) {
+      setEmail(profile.email);
+      setFirstName(profile.firstName);
+      setLastName(profile.lastName);
+      setImagePreview(profileService.getFilePreview(profile.profileImage));
+    }
+  }, [profile]);
 
   return (
     <form
@@ -118,9 +198,13 @@ const ProfileForm = () => {
       <div className="flex justify-end mt-4">
         <button
           type="submit"
-          className="bg-purple-600 text-white py-2 px-5 font-medium rounded-md hover:bg-purple-700 transition-colors duration-200"
+          className={
+            "bg-purple-600 text-white py-2 px-5 font-medium rounded-md hover:bg-purple-700 transition-colors duration-200" +
+            (loading ? " cursor-not-allowed" : "")
+          }
+          disabled={loading}
         >
-          Save
+          {loading ? "Saving..." : "Save"}
         </button>
       </div>
     </form>

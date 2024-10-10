@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { CiImageOn } from "react-icons/ci";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import profileService from "../appwrite/profile.service";
 import toast from "react-hot-toast";
+import { getProfile } from "../store/profile.slice";
 
 const ProfileForm = () => {
   const user = useSelector((state) => state.auth.user);
   let profile = useSelector((state) => state.profile.profile);
-
+  const dispatch = useDispatch();
   const [file, setFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null); // State for image preview
   const [firstName, setFirstName] = useState(user?.name);
@@ -83,6 +84,7 @@ const ProfileForm = () => {
           if (profile) toast.success("Profile created successfully");
           else toast.error("Failed to create profile");
         }
+        dispatch(getProfile({ profile: true }));
       }
 
       setLoading(false);

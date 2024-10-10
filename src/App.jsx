@@ -10,22 +10,38 @@ import authService from "./appwrite/auth.service";
 import { Loader } from "./components/Loader";
 import { login, logout } from "./store/auth.slice";
 import { ProtectedLayout, RedirectLayout } from "./components/AuthLayout";
-
+import profileService from "./appwrite/profile.service";
+import { getProfile } from "./store/profile.slice";
 
 const App = () => {
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
 
-
   // Check if user is logged in
   useEffect(() => {
     authService
       .getCurrentUser()
-      .then((user) => (user ? dispatch(login({ user })) : dispatch(logout())))
+      .then((user) => {
+        user ? dispatch(login({ user })) : dispatch(logout());
+        console.log(user.$id);
+        console.log(user);
+        
+         if (user) {
+           profileService
+             .getProfile(user?.$id)
+             .then((profile) => {
+          
+               dispatch(getProfile({ profile }));
+             })
+             .catch((err) => {
+               dispatch(getProfile({ profile: null }));
+             });
+         }
+      })
       .catch(() => dispatch(logout()))
       .finally(() => setLoading(false));
 
-    
+   
   }, []);
 
   // Render loading page

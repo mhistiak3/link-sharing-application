@@ -5,6 +5,8 @@ import { Link, useNavigate } from "react-router-dom";
 import authService from "../appwrite/auth.service";
 import { useDispatch } from "react-redux";
 import { login } from "../store/auth.slice";
+import { getProfile } from "../store/profile.slice";
+import profileService from "../appwrite/profile.service";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -33,6 +35,8 @@ const Register = () => {
       
       if (!user.error) {
         dispatch(login({ user }));
+         const profile = await profileService.getProfile(user?.userId);
+         dispatch(getProfile({ profile }));
         toast.success("Account created successfully");
         navigate("/profile-details");
       }

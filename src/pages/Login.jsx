@@ -5,6 +5,8 @@ import { Link, useNavigate } from "react-router-dom";
 import authService from "../appwrite/auth.service";
 import { login } from "../store/auth.slice";
 import toast from "react-hot-toast";
+import profileService from "../appwrite/profile.service";
+import { getProfile } from "../store/profile.slice";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -21,10 +23,10 @@ const Login = () => {
 
       if (!user.error) {
         dispatch(login({ user }));
+        const profile = await profileService.getProfile(user?.userId);
+        dispatch(getProfile({ profile }));
         toast.success("Login successfully");
-        // setTimeout(() => {
-        //   navigate("/profile-details");
-        // }, 5000);
+        navigate("/profile-details");
       } else {
         toast.error(user.error);
       }

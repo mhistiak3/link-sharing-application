@@ -1,32 +1,29 @@
 import Header from "../components/Header";
 import MobileImg from "../assets/mobile.png";
 import ProfileForm from "../components/ProfileForm";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import profileService from "../appwrite/profile.service";
-import { getProfile } from "../store/profile.slice";
-import { Loader } from "../components/Loader";
+// import { useEffect, useState } from "react";
+// import { useDispatch, useSelector } from "react-redux";
+// import profileService from "../appwrite/profile.service";
+// import { getProfile } from "../store/profile.slice";
+// import { Loader } from "../components/Loader";
 const EditProfile = () => {
-  const { user } = useSelector((state) => state.auth);
+  // const { user } = useSelector((state) => state.auth);
 
-  const [profileData, setProfileData] = useState(null);
-  const dispatch = useDispatch();
-  useEffect(() => {
-    if (user?.userId) {
-      // Fetch as soon as user is available
-      setTimeout(() => {
-        profileService
-          .getProfile(user?.userId)
-          .then((profile) => {
-            setProfileData(profile);
-            dispatch(getProfile({ profile }));
-          })
-          .catch((err) => {
-            dispatch(getProfile({ profile: null }));
-          });
-      }, 3000);
-    }
-  }, [user?.userId]);
+  // const [profileData, setProfileData] = useState(null);
+  // const dispatch = useDispatch();
+  // useEffect(() => {
+  //   if (user?.userId) {
+  //     profileService
+  //       .getProfile(user?.userId)
+  //       .then((profile) => {
+  //         setProfileData(profile);
+  //         dispatch(getProfile({ profile }));
+  //       })
+  //       .catch((err) => {
+  //         dispatch(getProfile({ profile: null }));
+  //       });
+  //   }
+  // }, [user]);
 
   return (
     <div className="w-full bg-slate-100 py-4">
@@ -43,13 +40,14 @@ const EditProfile = () => {
         </div>
 
         {/* Profile Form Container */}
-        {profileData ? (
+        <ProfileForm />
+        {/* {profileData ? (
           <ProfileForm />
         ) : (
           <div className="w-full md:w-1/3">
             <Loader />
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );

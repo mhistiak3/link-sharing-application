@@ -9,12 +9,14 @@ import { useDispatch } from "react-redux";
 import authService from "../appwrite/auth.service";
 import { logout } from "../store/auth.slice";
 import { getProfile } from "../store/profile.slice";
+import { useSelector } from "react-redux";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const toggleMenu = () => setIsOpen(!isOpen);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const user = useSelector((state)=>state.auth.user)
   const handleLogout = async () => {
     // Handle logout logic
     await authService.logout();
@@ -22,6 +24,8 @@ const Header = () => {
     dispatch(getProfile({ profile: null }));
     navigate("/");
   };
+
+  
   return (
     <div className="w-full md:max-w-7xl mx-auto bg-white flex justify-between items-center py-3 px-5 rounded-lg relative">
       {/* Logo and Title */}
@@ -65,7 +69,7 @@ const Header = () => {
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden absolute top-16 left-0 w-full bg-white shadow-lg rounded-lg px-5 py-4">
+        <div className="md:hidden absolute top-16 left-0 w-full bg-white shadow-lg rounded-lg px-5 py-4 z-10">
           <NavLink
             to={"/create-link"}
             className={({ isActive }) =>
@@ -91,7 +95,7 @@ const Header = () => {
             <span>Profile Details</span>
           </NavLink>
           <Link
-            to={"/login"}
+            to={`/preview/${user?.$id}`}
             className="border-2 border-purple-500 text-purple-500 px-5 py-2 font-medium rounded hover:bg-purple-500 hover:text-white transition"
             onClick={() => setIsOpen(false)}
           >
@@ -109,7 +113,7 @@ const Header = () => {
 
       <div className="hidden md:flex gap-3 items-center">
         <Link
-          to={"/login"}
+          to={`/preview/${user?.$id}`}
           className="border-2 border-purple-500 text-purple-500 px-5 py-2 font-medium rounded hover:bg-purple-500 hover:text-white transition"
         >
           <span>Preview</span>

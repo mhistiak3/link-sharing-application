@@ -15,6 +15,7 @@ import { getProfile } from "./store/profile.slice";
 import Links from "./pages/Links";
 import linksService from "./appwrite/links.service";
 import { getLinks } from "./store/links.slice";
+import Preview from "./pages/Preview";
 
 const App = () => {
   const [loading, setLoading] = useState(true);
@@ -97,6 +98,7 @@ const App = () => {
             </ProtectedLayout>
           }
         />
+        <Route path="/preview/:userId" element={<Preview />}/>
       </Routes>
       <Toaster />
     </>

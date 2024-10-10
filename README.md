@@ -2,16 +2,15 @@
 
 # Link Sharing Application
 
-This is a full-stack **Link Sharing Application** built with React, TailwindCSS, and Appwrite, allowing users to create and share their personal link.
+This is a full-stack **Link Sharing Application** built with React, TailwindCSS, and Appwrite, allowing users to create and share their personal links.
 
+Live link: [Link Sharing Application](https://link-share-ia.netlify.app)
 
 ## Technologies Used
 
 - **Frontend**: React, TailwindCSS, React-Icons, Redux Toolkit
 - **Backend**: Appwrite (for authentication, database, and file storage)
 - **State Management**: Redux Toolkit
-
-
 
 ### Clone the Repository
 
@@ -30,7 +29,7 @@ yarn install
 
 ### Set Up Environment Variables
 
-A `.env` file is required to run the project locally. This includes the Appwrite configuration details like the project ID, database, and API endpoints.
+A `.env` file is required to run the project locally. This includes Appwrite configuration details like the project ID, database, and API endpoints.
 
 Create a `.env` file in the root directory with the following content:
 
@@ -51,9 +50,7 @@ Once the environment variables are set, run the development server:
 
 ```bash
 npm run dev
-
 ```
 
 This will start the React development server and the app will be available at `http://localhost:5173`.
-
 

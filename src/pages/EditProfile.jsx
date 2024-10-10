@@ -5,26 +5,28 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import profileService from "../appwrite/profile.service";
 import { getProfile } from "../store/profile.slice";
+import { Loader } from "../components/Loader";
 const EditProfile = () => {
-  const { user, status } = useSelector((state) => state.auth);
+  const { user } = useSelector((state) => state.auth);
 
   const [profileData, setProfileData] = useState(null);
   const dispatch = useDispatch();
   useEffect(() => {
-    console.log(status);
-
-    if (status) {
-      profileService
-        .getProfile(user?.$id)
-        .then((profile) => {
-          dispatch(getProfile({ profile }));
-          setProfileData(profile);
-        })
-        .catch((err) => {
-          dispatch(getProfile({ profile: null }));
-        });
+    if (user?.userId) {
+      // Fetch as soon as user is available
+      setTimeout(() => {
+        profileService
+          .getProfile(user?.userId)
+          .then((profile) => {
+            setProfileData(profile);
+            dispatch(getProfile({ profile }));
+          })
+          .catch((err) => {
+            dispatch(getProfile({ profile: null }));
+          });
+      }, 3000);
     }
-  }, [status]);
+  }, [user?.userId]);
 
   return (
     <div className="w-full bg-slate-100 py-4">
@@ -41,7 +43,13 @@ const EditProfile = () => {
         </div>
 
         {/* Profile Form Container */}
-        <ProfileForm profileData={profileData} />
+        {profileData ? (
+          <ProfileForm />
+        ) : (
+          <div className="w-full md:w-1/3">
+            <Loader />
+          </div>
+        )}
       </div>
     </div>
   );

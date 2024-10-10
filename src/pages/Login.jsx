@@ -16,22 +16,22 @@ const Login = () => {
     e.preventDefault();
 
     try {
-
-        
       setLoading(true);
-      const user = await authService.login({email, password});
+      const user = await authService.login({ email, password });
 
       if (!user.error) {
         dispatch(login({ user }));
-        toast.success("Account created successfully");
-        navigate("/profile-details");
+        toast.success("Login successfully");
+        // setTimeout(() => {
+        //   navigate("/profile-details");
+        // }, 5000);
       } else {
         toast.error(user.error);
       }
       setLoading(false);
     } catch (error) {
       setLoading(false);
-          toast.error(error.message);
+      toast.error(error.message);
     }
   };
 

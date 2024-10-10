@@ -57,6 +57,8 @@ export class ProfileService {
   }
 
   async getProfile(userId) {
+    console.log(userId);
+    
     try {
       return await this.databases.getDocument(
         VITE_APPWRITE_DATABASE_ID,
@@ -64,7 +66,7 @@ export class ProfileService {
         userId
       );
     } catch (error) {
-      console.error("Error getting prifile:", error.message);
+      console.log("Error getting prifile:", error.message);
       return false;
     }
   }

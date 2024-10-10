@@ -4,11 +4,10 @@ import { useSelector } from "react-redux";
 import profileService from "../appwrite/profile.service";
 import toast from "react-hot-toast";
 
-const ProfileForm = ({ profileData }) => {
+const ProfileForm = () => {
   const user = useSelector((state) => state.auth.user);
-  const profile = useSelector((state) => state.profile.profile);
- 
-  
+  let profile = useSelector((state) => state.profile.profile);
+
   const [file, setFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null); // State for image preview
   const [firstName, setFirstName] = useState(user?.name);
@@ -33,11 +32,9 @@ const ProfileForm = ({ profileData }) => {
       if (profile) {
         // update Profile
         if (file) {
-            let isDelete = true;
+          let isDelete = true;
           if (profile?.profileImage) {
-             isDelete = await profileService.deleteFile(
-              profile?.profileImage
-            );
+            isDelete = await profileService.deleteFile(profile?.profileImage);
           }
 
           if (isDelete) {

@@ -34,24 +34,28 @@ export class LinksService {
     }
   }
 
-  async updateProfile(userId, updateProfile) {
+async updateLinks(userId, updatedLinks) {
     try {
-      console.log(updateProfile);
+      
+
 
       return await this.databases.updateDocument(
         VITE_APPWRITE_DATABASE_ID,
-        VITE_APPWRITE_PROFILE_ID,
+        VITE_APPWRITE_LINKS_ID,
         userId,
-        updateProfile
+        {
+          links: updatedLinks,
+        }
       );
     } catch (error) {
       console.error("Error updating post:", error);
-      throw error;
+      return {error: error.message};
     }
   }
 
   async getLinks(userId) {
   
+console.log(userId);
 
     try {
       return await this.databases.getDocument(

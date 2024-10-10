@@ -22,6 +22,7 @@ const Login = () => {
       const user = await authService.login({ email, password });
 
       if (!user.error) {
+          user.$id = user.userId;
         dispatch(login({ user }));
         const profile = await profileService.getProfile(user?.userId);
         dispatch(getProfile({ profile }));

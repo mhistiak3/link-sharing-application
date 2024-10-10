@@ -31,16 +31,15 @@ const Register = () => {
         password,
         name,
       });
-     
-      
+
       if (!user.error) {
+        user.$id = user.userId
         dispatch(login({ user }));
-         const profile = await profileService.getProfile(user?.userId);
-         dispatch(getProfile({ profile }));
+        const profile = await profileService.getProfile(user?.userId);
+        dispatch(getProfile({ profile }));
         toast.success("Account created successfully");
         navigate("/profile-details");
-      }
-      else{
+      } else {
         toast.error(user.error);
       }
       setLoading(false);
@@ -124,8 +123,10 @@ const Register = () => {
 
           <button
             type="submit"
-            className={"w-full py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition" +
-              (loading ? " opacity-50 cursor-not-allowed" : "")}
+            className={
+              "w-full py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition" +
+              (loading ? " opacity-50 cursor-not-allowed" : "")
+            }
             disabled={loading}
           >
             Register

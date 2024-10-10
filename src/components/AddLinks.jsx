@@ -14,6 +14,7 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import linksService from "../appwrite/links.service";
+import { getLinks } from "../store/links.slice";
 
 const AddLinks = () => {
   const [loading, setLoading] = useState(false);
@@ -28,7 +29,9 @@ const AddLinks = () => {
   const [openDropdownIndex, setOpenDropdownIndex] = useState(-1);
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
-  let allLinks = useSelector((state) => state.links.links);
+  console.log(user);
+  
+  let allLinks = useSelector((state) => state.links.Alllinks);
   // Icon mapping
   const iconMapping = {
     GitHub: <FaGithub className="text-xl mr-2" />,
@@ -40,8 +43,9 @@ const AddLinks = () => {
 
   // Handle input changes for links
   const handleInputChange = (index, event) => {
-    const newLinks = [...links];
-    newLinks[index].link = event.target.value; // Update link value
+    const newLinks = links.map((link, i) =>
+      i === index ? { ...link, link: event.target.value } : link
+    );
     setLinks(newLinks);
   };
 
@@ -77,17 +81,35 @@ const AddLinks = () => {
       return;
     }
     try {
-      if (!allLinks) {
+      if (allLinks.length === 0) {
         const { error } = await linksService.createLinks({
           userId: user?.$id,
           Links: JSON.stringify(links),
         });
+        console.log(error);
+
         if (error) {
           toast.error(error);
           setLoading(false);
           return;
         }
-        allLinks = links;
+        toast.success("Links create successfully");
+
+        dispatch(getLinks({ links }));
+        setLoading(false);
+      } else {
+        // update links
+        const userId = user?.$id;
+        const updatedLinks = JSON.stringify(links);
+        const { error } = await linksService.updateLinks(userId, updatedLinks);
+
+        if (error) {
+          toast.error(error);
+          setLoading(false);
+          return;
+        }
+        toast.success("Links updated successfully");
+        dispatch(getLinks({ links }));
         setLoading(false);
       }
     } catch (error) {
@@ -99,18 +121,12 @@ const AddLinks = () => {
   const handleSelectBoxToggle = (index) => {
     setOpenDropdownIndex(openDropdownIndex === index ? -1 : index); // Toggle the dropdown
   };
-console.log(links);
 
   useEffect(() => {
-    linksService
-      .getLinks(user?.$id)
-      .then(({ links }) => {
-        setLinks(JSON.parse(links));
-      })
-      .catch((error) => {
-        console.error(error.message);
-      });
-  }, []);
+    if (allLinks) {
+      setLinks(allLinks);
+    }
+  }, [allLinks]);
 
   const onDragEnd = (result) => {
     if (!result.destination) return;

@@ -1,20 +1,20 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  links: null,
+  Alllinks: [],
 };
 const linksSlice = createSlice({
   name: "links",
   initialState,
   reducers: {
-    getLink: async (state, action) => {
-       
-    
+    getLinks: (state, action) => {
+        
+      state.Alllinks = action.payload.links;
     },
   },
 });
 
-export const { getLink } = linksSlice.actions;
+export const { getLinks } = linksSlice.actions;
 
 const linksReducer = linksSlice.reducer;
 export default linksReducer;

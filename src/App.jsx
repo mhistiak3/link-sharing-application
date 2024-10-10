@@ -13,6 +13,8 @@ import { ProtectedLayout, RedirectLayout } from "./components/AuthLayout";
 import profileService from "./appwrite/profile.service";
 import { getProfile } from "./store/profile.slice";
 import Links from "./pages/Links";
+import linksService from "./appwrite/links.service";
+import { getLinks } from "./store/links.slice";
 
 const App = () => {
   const [loading, setLoading] = useState(true);
@@ -24,25 +26,34 @@ const App = () => {
       .getCurrentUser()
       .then((user) => {
         user ? dispatch(login({ user })) : dispatch(logout());
-        console.log(user.$id);
-        console.log(user);
-        
-         if (user) {
-           profileService
-             .getProfile(user?.$id)
-             .then((profile) => {
+     
+
+        if (user) {
+          // get Profile
+          profileService
+            .getProfile(user?.$id)
+            .then((profile) => {
+              dispatch(getProfile({ profile }));
+            })
+            .catch((err) => {
+              dispatch(getProfile({ profile: null }));
+            });
+          // get links
+          console.log(user);
           
-               dispatch(getProfile({ profile }));
-             })
-             .catch((err) => {
-               dispatch(getProfile({ profile: null }));
-             });
-         }
+          linksService
+            .getLinks(user?.$id)
+            .then(({ links }) => {
+              
+              dispatch(getLinks({ links:JSON.parse(links) }));
+            })
+            .catch((error) => {
+              dispatch(getLinks({ links: [] }));
+            });
+        }
       })
       .catch(() => dispatch(logout()))
       .finally(() => setLoading(false));
-
-   
   }, []);
 
   // Render loading page

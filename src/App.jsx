@@ -12,6 +12,7 @@ import { login, logout } from "./store/auth.slice";
 import { ProtectedLayout, RedirectLayout } from "./components/AuthLayout";
 import profileService from "./appwrite/profile.service";
 import { getProfile } from "./store/profile.slice";
+import Links from "./pages/Links";
 
 const App = () => {
   const [loading, setLoading] = useState(true);
@@ -74,6 +75,14 @@ const App = () => {
           element={
             <ProtectedLayout>
               <EditProfile />
+            </ProtectedLayout>
+          }
+        />
+        <Route
+          path="/create-link"
+          element={
+            <ProtectedLayout>
+              <Links />
             </ProtectedLayout>
           }
         />

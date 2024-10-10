@@ -11,9 +11,9 @@ const ProfileForm = () => {
   const dispatch = useDispatch();
   const [file, setFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null); // State for image preview
-  const [firstName, setFirstName] = useState(user?.name);
-  const [lastName, setLastName] = useState(user?.name);
-  const [email, setEmail] = useState(user?.email);
+  const [firstName, setFirstName] = useState(user?.name || "");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState(user?.email || "");
   const [loading, setLoading] = useState(false);
 
   const handleImageUpload = (e) => {
@@ -60,31 +60,28 @@ const ProfileForm = () => {
         }
       } else {
         // create Profile
+
         if (file) {
           const fileId = await profileService.uploadFile(file);
 
+          console.log(fileId);
+          
           // Create profile
           const profile = await profileService.createProfile({
             firstName,
             lastName,
             email,
             userId: user?.$id,
-            profileImage: fileId.$id,
+            profileImage: fileId?.$id,
           });
 
           if (profile) toast.success("Profile created successfully");
           else toast.error("Failed to create profile");
+           dispatch(getProfile({ profile: { ...profile} }));
         } else {
-          const profile = await profileService.createProfile({
-            firstName,
-            lastName,
-            email,
-            userId: user?.$id,
-          });
-          if (profile) toast.success("Profile created successfully");
-          else toast.error("Failed to create profile");
+          toast.error("Image is required");
         }
-        dispatch(getProfile({ profile: true }));
+       
       }
 
       setLoading(false);
@@ -99,6 +96,8 @@ const ProfileForm = () => {
       setEmail(profile.email);
       setFirstName(profile.firstName);
       setLastName(profile.lastName);
+      console.log(profile);
+      
       setImagePreview(profileService.getFilePreview(profile.profileImage));
     }
   }, [profile]);
@@ -130,6 +129,7 @@ const ProfileForm = () => {
             id="file"
             className="hidden"
             onChange={handleImageUpload}
+            
           />
 
           {imagePreview && (
@@ -161,6 +161,7 @@ const ProfileForm = () => {
             name="firstName"
             className="border border-gray-300 rounded-md py-2 px-3 w-2/3 focus:outline-none focus:ring-2 focus:ring-purple-500"
             placeholder="Enter your first name"
+            required
           />
         </div>
         <div className="flex justify-between items-center">
@@ -175,6 +176,7 @@ const ProfileForm = () => {
             name="lastName"
             className="border border-gray-300 rounded-md py-2 px-3 w-2/3 focus:outline-none focus:ring-2 focus:ring-purple-500"
             placeholder="Enter your last name"
+            required
           />
         </div>
         <div className="flex justify-between items-center">
@@ -189,6 +191,7 @@ const ProfileForm = () => {
             name="email"
             className="border border-gray-300 rounded-md py-2 px-3 w-2/3 focus:outline-none focus:ring-2 focus:ring-purple-500"
             placeholder="Enter your email"
+            required
           />
         </div>
       </div>

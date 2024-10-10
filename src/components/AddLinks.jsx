@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MdOutlineDragHandle } from "react-icons/md";
 import {
   FaLink,
@@ -11,19 +11,24 @@ import {
 import SocialLinksDropdown from "./SelectBox";
 import toast from "react-hot-toast";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import linksService from "../appwrite/links.service";
 
 const AddLinks = () => {
   const [loading, setLoading] = useState(false);
   const [links, setLinks] = useState([
     {
       id: Date.now(),
-      link: "https://www.google.com",
+      link: "",
       name: "GitHub",
       selectedIcon: "GitHub",
     },
   ]);
   const [openDropdownIndex, setOpenDropdownIndex] = useState(-1);
-
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth.user);
+  let allLinks = useSelector((state) => state.links.links);
   // Icon mapping
   const iconMapping = {
     GitHub: <FaGithub className="text-xl mr-2" />,
@@ -60,36 +65,60 @@ const AddLinks = () => {
     setLinks(links.filter((link) => link.id !== id));
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     setLoading(true);
-    const hasEmptyFields = links.some((link) => !link.name || !link.link);
 
+    // validation
+    const hasEmptyFields = links.some((link) => !link.name || !link.link);
     if (hasEmptyFields) {
       setLoading(false);
       toast.error("Please fill  all fields before saving.");
       return;
     }
-
-    console.log("Links saved to database:", links);
-    setTimeout(() => {
+    try {
+      if (!allLinks) {
+        const { error } = await linksService.createLinks({
+          userId: user?.$id,
+          Links: JSON.stringify(links),
+        });
+        if (error) {
+          toast.error(error);
+          setLoading(false);
+          return;
+        }
+        allLinks = links;
+        setLoading(false);
+      }
+    } catch (error) {
       setLoading(false);
-    }, 2000);
+      toast.error(error.message);
+    }
   };
 
   const handleSelectBoxToggle = (index) => {
     setOpenDropdownIndex(openDropdownIndex === index ? -1 : index); // Toggle the dropdown
   };
+console.log(links);
 
-  // Handle drag end
+  useEffect(() => {
+    linksService
+      .getLinks(user?.$id)
+      .then(({ links }) => {
+        setLinks(JSON.parse(links));
+      })
+      .catch((error) => {
+        console.error(error.message);
+      });
+  }, []);
+
   const onDragEnd = (result) => {
-    if (!result.destination) return; // If dropped outside the list
+    if (!result.destination) return;
 
     const reorderedLinks = Array.from(links);
     const [removed] = reorderedLinks.splice(result.source.index, 1);
     reorderedLinks.splice(result.destination.index, 0, removed);
 
-    // Update the state with the new order
     setLinks(reorderedLinks);
   };
 
@@ -116,7 +145,7 @@ const AddLinks = () => {
       </div>
 
       <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable droppableId="droppable" >
+        <Droppable droppableId="droppable">
           {(provided) => (
             <div ref={provided.innerRef} {...provided.droppableProps}>
               {links.map((link, index) => (

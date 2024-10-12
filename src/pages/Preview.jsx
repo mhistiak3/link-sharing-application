@@ -34,7 +34,7 @@ const Preview = () => {
     },
     Instagram: {
       icon: <FaInstagram className="text-xl mr-2" />,
-      color: "bg-pink-300 text-white", // Background and text color for Instagram
+      color: "bg-pink-500 text-white", // Background and text color for Instagram
     },
     LinkedIn: {
       icon: <FaLinkedin className="text-xl mr-2" />,

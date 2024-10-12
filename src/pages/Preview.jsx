@@ -48,7 +48,6 @@ const Preview = () => {
       const profile = await profileService.getProfile(userId);
       setProfile(profile);
       const links = await linksService.getLinks(userId);
-      console.log(links);
       const orginalLinks = JSON.parse(links.links);
       setLinks(orginalLinks);
       setLoading(false);

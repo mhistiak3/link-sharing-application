@@ -12,34 +12,35 @@ import profileService from "../appwrite/profile.service";
 import linksService from "../appwrite/links.service";
 import { Loader } from "../components/Loader";
 import { useSelector } from "react-redux";
+import toast from "react-hot-toast";
 const Preview = () => {
   const { userId } = useParams();
   const [links, setLinks] = useState([]);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(false);
-  const userStatus = useSelector((state)=>state.auth.status)
- const iconMapping = {
-   GitHub: {
-     icon: <FaGithub className="text-xl mr-2" />,
-     color: "bg-black text-white", // Background and text color for GitHub
-   },
-   YouTube: {
-     icon: <FaYoutube className="text-xl mr-2" />,
-     color: "bg-red-600 text-white", // Background and text color for YouTube
-   },
-   Facebook: {
-     icon: <FaFacebook className="text-xl mr-2" />,
-     color: "bg-blue-600 text-white", // Background and text color for Facebook
-   },
-   Instagram: {
-     icon: <FaInstagram className="text-xl mr-2" />,
-     color: "bg-pink-300 text-white", // Background and text color for Instagram
-   },
-   LinkedIn: {
-     icon: <FaLinkedin className="text-xl mr-2" />,
-     color: "bg-blue-900 text-white", // Background and text color for LinkedIn
-   },
- };
+  const userStatus = useSelector((state) => state.auth.status);
+  const iconMapping = {
+    GitHub: {
+      icon: <FaGithub className="text-xl mr-2" />,
+      color: "bg-black text-white", // Background and text color for GitHub
+    },
+    YouTube: {
+      icon: <FaYoutube className="text-xl mr-2" />,
+      color: "bg-red-600 text-white", // Background and text color for YouTube
+    },
+    Facebook: {
+      icon: <FaFacebook className="text-xl mr-2" />,
+      color: "bg-blue-600 text-white", // Background and text color for Facebook
+    },
+    Instagram: {
+      icon: <FaInstagram className="text-xl mr-2" />,
+      color: "bg-pink-300 text-white", // Background and text color for Instagram
+    },
+    LinkedIn: {
+      icon: <FaLinkedin className="text-xl mr-2" />,
+      color: "bg-blue-900 text-white", // Background and text color for LinkedIn
+    },
+  };
 
   const profileInfo = async () => {
     try {
@@ -57,7 +58,12 @@ const Preview = () => {
     }
   };
 
-  
+  // Copy to Clipboard
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(window.location.href);
+    toast.success("Link copied to clipboard");
+  };
+
   useEffect(() => {
     profileInfo();
   }, []);
@@ -76,7 +82,10 @@ const Preview = () => {
             >
               Back to Editor
             </Link>
-            <button className="bg-purple-600 text-white px-5 py-2 rounded-md font-medium hover:bg-purple-800 hover:text-white transition duration-300">
+            <button
+              className="bg-purple-600 text-white px-5 py-2 rounded-md font-medium hover:bg-purple-800 hover:text-white transition duration-300"
+              onClick={copyToClipboard}
+            >
               Share Link
             </button>
           </div>

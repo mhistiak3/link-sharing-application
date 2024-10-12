@@ -82,7 +82,7 @@ const Preview = () => {
             >
               Back to Editor
             </Link>
-            <button
+            <button title="Copy Link"
               className="bg-purple-600 text-white px-5 py-2 rounded-md font-medium hover:bg-purple-800 hover:text-white transition duration-300"
               onClick={copyToClipboard}
             >

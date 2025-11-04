@@ -1,11 +1,11 @@
-// Login.js
-import React, { useState } from "react";
+import { useState } from "react";
+import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import authService from "../appwrite/auth.service";
-import { login } from "../store/auth.slice";
-import toast from "react-hot-toast";
 import profileService from "../appwrite/profile.service";
+import { SUCCESS_MESSAGES } from "../config/constants";
+import { login } from "../store/auth.slice";
 import { getProfile } from "../store/profile.slice";
 
 const Login = () => {
@@ -22,11 +22,11 @@ const Login = () => {
       const user = await authService.login({ email, password });
 
       if (!user.error) {
-          user.$id = user.userId;
+        user.$id = user.userId;
         dispatch(login({ user }));
         const profile = await profileService.getProfile(user?.userId);
         dispatch(getProfile({ profile }));
-        toast.success("Login successfully");
+        toast.success(SUCCESS_MESSAGES.LOGIN_SUCCESS);
         navigate("/profile-details");
       } else {
         toast.error(user.error);

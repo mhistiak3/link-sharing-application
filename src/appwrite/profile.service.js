@@ -1,9 +1,9 @@
-import { Client, ID, Databases, Storage } from "appwrite";
+import { Client, Databases, ID, Storage } from "appwrite";
 import {
-  VITE_APPWRITE_PROFILE_ID,
-  VITE_APPWRITE_STORAGE_ID,
   VITE_APPWRITE_DATABASE_ID,
+  VITE_APPWRITE_PROFILE_ID,
   VITE_APPWRITE_PROJECT_ID,
+  VITE_APPWRITE_STORAGE_ID,
   VITE_APPWRITE_URL,
 } from "../config";
 
@@ -42,8 +42,6 @@ export class ProfileService {
 
   async updateProfile(userId, updateProfile) {
     try {
-      console.log(updateProfile);
-
       return await this.databases.updateDocument(
         VITE_APPWRITE_DATABASE_ID,
         VITE_APPWRITE_PROFILE_ID,
@@ -51,14 +49,12 @@ export class ProfileService {
         updateProfile
       );
     } catch (error) {
-      console.error("Error updating post:", error);
-      throw error;
+      console.error("Error updating profile:", error);
+      return { error: error.message || "Failed to update profile" };
     }
   }
 
   async getProfile(userId) {
-    console.log(userId);
-    
     try {
       return await this.databases.getDocument(
         VITE_APPWRITE_DATABASE_ID,
@@ -66,7 +62,7 @@ export class ProfileService {
         userId
       );
     } catch (error) {
-      console.log("Error getting prifile:", error.message);
+      console.log("Error getting profile:", error.message);
       return false;
     }
   }
@@ -81,11 +77,10 @@ export class ProfileService {
       );
     } catch (error) {
       console.error("Error uploading file:", error);
-      return false;
+      return { error: error.message || "Failed to upload file" };
     }
   }
   async deleteFile(fileId) {
-    
     try {
       await this.bucket.deleteFile(VITE_APPWRITE_STORAGE_ID, fileId);
       return true;

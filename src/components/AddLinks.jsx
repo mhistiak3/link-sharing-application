@@ -1,20 +1,25 @@
 import { useEffect, useState } from "react";
-import { MdOutlineDragHandle } from "react-icons/md";
-import {
-  FaLink,
-  FaGithub,
-  FaYoutube,
-  FaFacebook,
-  FaInstagram,
-  FaLinkedin,
-} from "react-icons/fa";
-import SocialLinksDropdown from "./SelectBox";
+import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import toast from "react-hot-toast";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import { useDispatch } from "react-redux";
-import { useSelector } from "react-redux";
+import {
+  FaFacebook,
+  FaGithub,
+  FaInstagram,
+  FaLink,
+  FaLinkedin,
+  FaYoutube,
+} from "react-icons/fa";
+import { MdOutlineDragHandle } from "react-icons/md";
+import { useDispatch, useSelector } from "react-redux";
 import linksService from "../appwrite/links.service";
+import {
+  ERROR_MESSAGES,
+  MAX_LINKS,
+  SUCCESS_MESSAGES,
+} from "../config/constants";
 import { getLinks } from "../store/links.slice";
+import { isValidURL } from "../utils/helpers";
+import SocialLinksDropdown from "./SelectBox";
 
 const AddLinks = () => {
   const [loading, setLoading] = useState(false);
@@ -29,8 +34,6 @@ const AddLinks = () => {
   const [openDropdownIndex, setOpenDropdownIndex] = useState(-1);
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
-  console.log(user);
-  
   let allLinks = useSelector((state) => state.links.Alllinks);
   // Icon mapping
   const iconMapping = {
@@ -51,8 +54,8 @@ const AddLinks = () => {
 
   // Add new link
   const addNewLink = () => {
-    if (links.length >= 5) {
-      toast.error("You can only add up to 5 links");
+    if (links.length >= MAX_LINKS) {
+      toast.error(ERROR_MESSAGES.MAX_LINKS_REACHED);
       return;
     }
     const newLink = {
@@ -77,44 +80,50 @@ const AddLinks = () => {
     const hasEmptyFields = links.some((link) => !link.name || !link.link);
     if (hasEmptyFields) {
       setLoading(false);
-      toast.error("Please fill  all fields before saving.");
+      toast.error(ERROR_MESSAGES.EMPTY_FIELDS);
+      return;
+    }
+
+    // URL validation
+    const invalidLinks = links.filter((link) => !isValidURL(link.link));
+    if (invalidLinks.length > 0) {
+      setLoading(false);
+      toast.error(ERROR_MESSAGES.INVALID_URL);
       return;
     }
     try {
       if (allLinks.length === 0) {
-        const { error } = await linksService.createLinks({
+        const result = await linksService.createLinks({
           userId: user?.$id,
           Links: JSON.stringify(links),
         });
-        console.log(error);
 
-        if (error) {
-          toast.error(error);
+        if (result?.error) {
+          toast.error(result.error);
           setLoading(false);
           return;
         }
-        toast.success("Links create successfully");
-
+        toast.success(SUCCESS_MESSAGES.LINKS_CREATED);
         dispatch(getLinks({ links }));
         setLoading(false);
       } else {
         // update links
         const userId = user?.$id;
         const updatedLinks = JSON.stringify(links);
-        const { error } = await linksService.updateLinks(userId, updatedLinks);
+        const result = await linksService.updateLinks(userId, updatedLinks);
 
-        if (error) {
-          toast.error(error);
+        if (result?.error) {
+          toast.error(result.error);
           setLoading(false);
           return;
         }
-        toast.success("Links updated successfully");
+        toast.success(SUCCESS_MESSAGES.LINKS_UPDATED);
         dispatch(getLinks({ links }));
         setLoading(false);
       }
     } catch (error) {
       setLoading(false);
-      toast.error(error.message);
+      toast.error(error?.message || "An error occurred while saving links");
     }
   };
 

@@ -1,22 +1,22 @@
-import { BsLink } from "react-icons/bs";
-import { Link, NavLink, useNavigate } from "react-router-dom";
-import { LuLink } from "react-icons/lu";
-import { CgProfile } from "react-icons/cg";
-import { AiOutlineLogout } from "react-icons/ai";
 import { useState } from "react";
+import { AiOutlineLogout } from "react-icons/ai";
+import { BsLink } from "react-icons/bs";
+import { CgProfile } from "react-icons/cg";
 import { FiMenu, FiX } from "react-icons/fi";
-import { useDispatch } from "react-redux";
+import { LuLink } from "react-icons/lu";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import authService from "../appwrite/auth.service";
 import { logout } from "../store/auth.slice";
 import { getProfile } from "../store/profile.slice";
-import { useSelector } from "react-redux";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const toggleMenu = () => setIsOpen(!isOpen);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const user = useSelector((state)=>state.auth.user)
+  const user = useSelector((state) => state.auth.user);
+
   const handleLogout = async () => {
     // Handle logout logic
     await authService.logout();
@@ -25,7 +25,6 @@ const Header = () => {
     navigate("/");
   };
 
-  
   return (
     <div className="w-full md:max-w-7xl mx-auto bg-white flex justify-between items-center py-3 px-5 rounded-lg relative">
       {/* Logo and Title */}

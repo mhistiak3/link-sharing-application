@@ -24,11 +24,11 @@ export class AuthService {
       if (userAccount) {
         return await this.login({ email, password });
       } else {
-        throw new Error("Account creation failed");
+        return { error: "Account creation failed" };
       }
     } catch (error) {
       console.error("Error creating account:", error.message);
-      return { error : error.message };
+      return { error: error.message || "Failed to create account" };
     }
   }
   async login({ email, password }) {
@@ -36,7 +36,7 @@ export class AuthService {
       return await this.account.createEmailPasswordSession(email, password);
     } catch (error) {
       console.error("Error logging in:", error.message);
-      return { error: error.message };
+      return { error: error.message || "Invalid email or password" };
     }
   }
 

@@ -1,18 +1,19 @@
-import React, { useEffect, useState } from "react";
-import {
-  FaGithub,
-  FaYoutube,
-  FaLinkedin,
-  FaFacebook,
-  FaInstagram,
-} from "react-icons/fa";
-import { Link, useParams } from "react-router-dom";
-import { FaArrowRightLong } from "react-icons/fa6";
-import profileService from "../appwrite/profile.service";
-import linksService from "../appwrite/links.service";
-import { Loader } from "../components/Loader";
-import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import {
+  FaFacebook,
+  FaGithub,
+  FaInstagram,
+  FaLinkedin,
+  FaYoutube,
+} from "react-icons/fa";
+import { FaArrowRightLong } from "react-icons/fa6";
+import { useSelector } from "react-redux";
+import { Link, useParams } from "react-router-dom";
+import linksService from "../appwrite/links.service";
+import profileService from "../appwrite/profile.service";
+import { Loader } from "../components/Loader";
+import { SUCCESS_MESSAGES } from "../config/constants";
 const Preview = () => {
   const { userId } = useParams();
   const [links, setLinks] = useState([]);
@@ -53,14 +54,14 @@ const Preview = () => {
       setLoading(false);
     } catch (error) {
       setLoading(false);
-      console.log(error);
+      console.error("Error loading profile:", error);
     }
   };
 
   // Copy to Clipboard
   const copyToClipboard = () => {
     navigator.clipboard.writeText(window.location.href);
-    toast.success("Link copied to clipboard");
+    toast.success(SUCCESS_MESSAGES.LINK_COPIED);
   };
 
   useEffect(() => {
@@ -81,7 +82,8 @@ const Preview = () => {
             >
               Back to Editor
             </Link>
-            <button title="Copy Link"
+            <button
+              title="Copy Link"
               className="bg-purple-600 text-white px-5 py-2 rounded-md font-medium hover:bg-purple-800 hover:text-white transition duration-300"
               onClick={copyToClipboard}
             >
@@ -108,14 +110,15 @@ const Preview = () => {
         <p className="text-gray-500 mb-6">{profile ? profile.email : ""}</p>
 
         <div className="space-y-4 mt-8">
-          {links &&
-            links.length > 0 &&
+          {links && links.length > 0 ? (
             links.map((link, index) => (
               <a
                 key={index}
                 href={link.link}
+                target="_blank"
+                rel="noopener noreferrer"
                 className={
-                  "flex items-center justify-between  py-3 rounded-lg shadow-md  transition px-4 " +
+                  "flex items-center justify-between py-3 rounded-lg shadow-md transition px-4 " +
                   iconMapping[link.selectedIcon].color
                 }
               >
@@ -124,7 +127,10 @@ const Preview = () => {
                 </span>
                 <FaArrowRightLong />
               </a>
-            ))}
+            ))
+          ) : (
+            <p className="text-gray-500 text-center">No links added yet</p>
+          )}
         </div>
       </div>
     </div>

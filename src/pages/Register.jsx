@@ -1,12 +1,16 @@
-// Register.js
-import React, { useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import authService from "../appwrite/auth.service";
-import { useDispatch } from "react-redux";
+import profileService from "../appwrite/profile.service";
+import {
+  ERROR_MESSAGES,
+  MIN_PASSWORD_LENGTH,
+  SUCCESS_MESSAGES,
+} from "../config/constants";
 import { login } from "../store/auth.slice";
 import { getProfile } from "../store/profile.slice";
-import profileService from "../appwrite/profile.service";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -18,9 +22,16 @@ const Register = () => {
   const navigate = useNavigate();
   const handleRegister = async (e) => {
     e.preventDefault();
+
     // Add basic validation
     if (password !== confirmPassword) {
-      toast.error("Passwords do not match!");
+      toast.error(ERROR_MESSAGES.PASSWORDS_DONT_MATCH);
+      return;
+    }
+
+    // Password strength validation
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      toast.error(ERROR_MESSAGES.PASSWORD_TOO_SHORT);
       return;
     }
     try {
@@ -33,11 +44,11 @@ const Register = () => {
       });
 
       if (!user.error) {
-        user.$id = user.userId
+        user.$id = user.userId;
         dispatch(login({ user }));
         const profile = await profileService.getProfile(user?.userId);
         dispatch(getProfile({ profile }));
-        toast.success("Account created successfully");
+        toast.success(SUCCESS_MESSAGES.REGISTER_SUCCESS);
         navigate("/profile-details");
       } else {
         toast.error(user.error);
@@ -98,8 +109,9 @@ const Register = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-purple-500"
-              placeholder="Enter your password"
+              placeholder="Enter your password (min 8 characters)"
               required
+              minLength={8}
             />
           </div>
 

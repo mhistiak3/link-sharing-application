@@ -1,21 +1,21 @@
+import { Toaster } from "react-hot-toast";
+import { useDispatch } from "react-redux";
 import { Route, Routes } from "react-router-dom";
+import EditProfile from "./pages/EditProfile";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import { Toaster } from "react-hot-toast";
-import EditProfile from "./pages/EditProfile";
-import { useDispatch, useSelector } from "react-redux";
 
 import { useEffect, useState } from "react";
 import authService from "./appwrite/auth.service";
-import { Loader } from "./components/Loader";
-import { login, logout } from "./store/auth.slice";
-import { ProtectedLayout, RedirectLayout } from "./components/AuthLayout";
-import profileService from "./appwrite/profile.service";
-import { getProfile } from "./store/profile.slice";
-import Links from "./pages/Links";
 import linksService from "./appwrite/links.service";
-import { getLinks } from "./store/links.slice";
+import profileService from "./appwrite/profile.service";
+import { ProtectedLayout, RedirectLayout } from "./components/AuthLayout";
+import { Loader } from "./components/Loader";
+import Links from "./pages/Links";
 import Preview from "./pages/Preview";
+import { login, logout } from "./store/auth.slice";
+import { getLinks } from "./store/links.slice";
+import { getProfile } from "./store/profile.slice";
 
 const App = () => {
   const [loading, setLoading] = useState(true);
@@ -27,7 +27,6 @@ const App = () => {
       .getCurrentUser()
       .then((user) => {
         user ? dispatch(login({ user })) : dispatch(logout());
-     
 
         if (user) {
           // get Profile
@@ -40,13 +39,10 @@ const App = () => {
               dispatch(getProfile({ profile: null }));
             });
           // get links
-          console.log(user);
-          
           linksService
             .getLinks(user?.$id)
             .then(({ links }) => {
-              
-              dispatch(getLinks({ links:JSON.parse(links) }));
+              dispatch(getLinks({ links: JSON.parse(links) }));
             })
             .catch((error) => {
               dispatch(getLinks({ links: [] }));
@@ -98,7 +94,7 @@ const App = () => {
             </ProtectedLayout>
           }
         />
-        <Route path="/preview/:userId" element={<Preview />}/>
+        <Route path="/preview/:userId" element={<Preview />} />
       </Routes>
       <Toaster />
     </>

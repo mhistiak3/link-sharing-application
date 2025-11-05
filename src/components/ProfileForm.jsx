@@ -59,7 +59,7 @@ const ProfileForm = () => {
 
           if (isDelete) {
             const fileId = await profileService.uploadFile(file);
-            if (fileId && !fileId.error) {
+            if (fileId && !fileId.error && fileId.$id) {
               const updatedProfile = await profileService.updateProfile(
                 user.$id,
                 {
@@ -70,13 +70,23 @@ const ProfileForm = () => {
                 }
               );
               if (updatedProfile && !updatedProfile.error) {
-                dispatch(getProfile({ profile: updatedProfile }));
+                // Fetch the profile again to ensure we have the correct data
+                const fetchedProfile = await profileService.getProfile(
+                  user.$id
+                );
+                if (fetchedProfile) {
+                  dispatch(getProfile({ profile: fetchedProfile }));
+                } else {
+                  dispatch(getProfile({ profile: updatedProfile }));
+                }
+                // Clear the local file state
+                setFile(null);
                 toast.success(SUCCESS_MESSAGES.PROFILE_UPDATED);
               } else {
                 toast.error("Failed to update profile");
               }
             } else {
-              toast.error("Failed to upload image");
+              toast.error(fileId?.error || "Failed to upload image");
             }
           } else {
             toast.error("Failed to delete old image");
@@ -88,7 +98,13 @@ const ProfileForm = () => {
             email,
           });
           if (updatedProfile && !updatedProfile.error) {
-            dispatch(getProfile({ profile: updatedProfile }));
+            // Fetch the profile again
+            const fetchedProfile = await profileService.getProfile(user.$id);
+            if (fetchedProfile) {
+              dispatch(getProfile({ profile: fetchedProfile }));
+            } else {
+              dispatch(getProfile({ profile: updatedProfile }));
+            }
             toast.success(SUCCESS_MESSAGES.PROFILE_UPDATED);
           } else {
             toast.error("Failed to update profile");
@@ -99,24 +115,33 @@ const ProfileForm = () => {
         if (file) {
           const fileId = await profileService.uploadFile(file);
 
-          if (fileId && !fileId.error) {
+          if (fileId && !fileId.error && fileId.$id) {
             // Create profile
             const newProfile = await profileService.createProfile({
               firstName,
               lastName,
               email,
               userId: user?.$id,
-              profileImage: fileId?.$id,
+              profileImage: fileId.$id,
             });
 
             if (newProfile && !newProfile.error) {
-              dispatch(getProfile({ profile: newProfile }));
-              toast.success(SUCCESS_MESSAGES.PROFILE_CREATED);
+              // Fetch the profile again to ensure we have the correct data
+              const fetchedProfile = await profileService.getProfile(user?.$id);
+              if (fetchedProfile) {
+                dispatch(getProfile({ profile: fetchedProfile }));
+                // Clear the local preview and file state
+                setFile(null);
+                toast.success(SUCCESS_MESSAGES.PROFILE_CREATED);
+              } else {
+                dispatch(getProfile({ profile: newProfile }));
+                toast.success(SUCCESS_MESSAGES.PROFILE_CREATED);
+              }
             } else {
               toast.error("Failed to create profile");
             }
           } else {
-            toast.error("Failed to upload image");
+            toast.error(fileId?.error || "Failed to upload image");
           }
         } else {
           toast.error(ERROR_MESSAGES.IMAGE_REQUIRED);
@@ -135,7 +160,10 @@ const ProfileForm = () => {
       setEmail(profile.email);
       setFirstName(profile.firstName);
       setLastName(profile.lastName);
-      setImagePreview(profileService.getFilePreview(profile.profileImage));
+      if (profile.profileImage) {
+        const imageUrl = profileService.getFilePreview(profile.profileImage);
+        setImagePreview(imageUrl?.href || imageUrl);
+      }
     }
   }, [profile]);
 

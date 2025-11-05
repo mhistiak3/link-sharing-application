@@ -18,7 +18,7 @@ import {
   SUCCESS_MESSAGES,
 } from "../config/constants";
 import { getLinks } from "../store/links.slice";
-import { isValidURL } from "../utils/helpers";
+import { isValidURL, validatePlatformURL } from "../utils/helpers";
 import SocialLinksDropdown from "./SelectBox";
 
 const AddLinks = () => {
@@ -91,6 +91,17 @@ const AddLinks = () => {
       toast.error(ERROR_MESSAGES.INVALID_URL);
       return;
     }
+
+    // Platform-specific URL validation
+    for (const link of links) {
+      const validation = validatePlatformURL(link.link, link.name);
+      if (!validation.isValid) {
+        setLoading(false);
+        toast.error(validation.message);
+        return;
+      }
+    }
+
     try {
       if (allLinks.length === 0) {
         const result = await linksService.createLinks({

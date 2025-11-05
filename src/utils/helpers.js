@@ -17,6 +17,60 @@ export const isValidURL = (url) => {
 };
 
 /**
+ * Validates if URL matches the selected platform
+ * @param {string} url - The URL to validate
+ * @param {string} platform - The platform name (GitHub, YouTube, etc.)
+ * @returns {object} - {isValid: boolean, message: string}
+ */
+export const validatePlatformURL = (url, platform) => {
+  if (!url || !platform) {
+    return { isValid: false, message: "URL and platform are required" };
+  }
+
+  const platformPatterns = {
+    GitHub: {
+      patterns: [/github\.com/i, /gist\.github\.com/i],
+      message:
+        "Please enter a valid GitHub URL (e.g., https://github.com/username)",
+    },
+    YouTube: {
+      patterns: [/youtube\.com/i, /youtu\.be/i],
+      message:
+        "Please enter a valid YouTube URL (e.g., https://youtube.com/@channel)",
+    },
+    Facebook: {
+      patterns: [/facebook\.com/i, /fb\.com/i, /fb\.me/i],
+      message:
+        "Please enter a valid Facebook URL (e.g., https://facebook.com/username)",
+    },
+    Instagram: {
+      patterns: [/instagram\.com/i],
+      message:
+        "Please enter a valid Instagram URL (e.g., https://instagram.com/username)",
+    },
+    LinkedIn: {
+      patterns: [/linkedin\.com/i],
+      message:
+        "Please enter a valid LinkedIn URL (e.g., https://linkedin.com/in/username)",
+    },
+  };
+
+  const platformConfig = platformPatterns[platform];
+  if (!platformConfig) {
+    return { isValid: true, message: "" }; // Unknown platform, allow any valid URL
+  }
+
+  const isValidForPlatform = platformConfig.patterns.some((pattern) =>
+    pattern.test(url)
+  );
+
+  return {
+    isValid: isValidForPlatform,
+    message: isValidForPlatform ? "" : platformConfig.message,
+  };
+};
+
+/**
  * Validates file size
  * @param {File} file - The file to validate
  * @param {number} maxSizeMB - Maximum size in MB

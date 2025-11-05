@@ -24,6 +24,7 @@ export const ERROR_MESSAGES = {
   FILE_TOO_LARGE: `Image size must be below ${MAX_FILE_SIZE_MB}MB`,
   INVALID_FILE_TYPE: "Only JPG, JPEG, and PNG formats are allowed",
   INVALID_URL: "Please enter valid URLs (e.g., https://example.com)",
+  INVALID_PLATFORM_URL: "URL doesn't match the selected platform",
   PASSWORD_TOO_SHORT: `Password must be at least ${MIN_PASSWORD_LENGTH} characters long`,
   PASSWORDS_DONT_MATCH: "Passwords do not match",
   EMPTY_FIELDS: "Please fill all fields before saving",

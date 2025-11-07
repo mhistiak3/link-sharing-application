@@ -90,8 +90,9 @@ export class ProfileService {
     }
   }
 
+  // Use getFileView instead of getFilePreview to avoid transformation restrictions on free plan
   getFilePreview(fileId) {
-    return this.bucket.getFilePreview(VITE_APPWRITE_STORAGE_ID, fileId);
+    return this.bucket.getFileView(VITE_APPWRITE_STORAGE_ID, fileId);
   }
 }
 const profileService = new ProfileService();

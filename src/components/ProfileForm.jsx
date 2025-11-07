@@ -59,6 +59,7 @@ const ProfileForm = () => {
 
           if (isDelete) {
             const fileId = await profileService.uploadFile(file);
+
             if (fileId && !fileId.error && fileId.$id) {
               const updatedProfile = await profileService.updateProfile(
                 user.$id,
@@ -69,6 +70,7 @@ const ProfileForm = () => {
                   profileImage: fileId.$id,
                 }
               );
+
               if (updatedProfile && !updatedProfile.error) {
                 // Fetch the profile again to ensure we have the correct data
                 const fetchedProfile = await profileService.getProfile(

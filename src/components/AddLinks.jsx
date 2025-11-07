@@ -161,7 +161,7 @@ const AddLinks = () => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="w-full md:w-2/3 bg-white px-6 rounded-lg h-full py-8"
+      className="w-full md:w-2/3 bg-white px-6 rounded-lg  py-8"
     >
       <h2 className="text-2xl font-semibold text-gray-800">
         Customize your links

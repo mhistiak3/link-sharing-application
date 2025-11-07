@@ -48,6 +48,7 @@ const Preview = () => {
       setLoading(true);
       const profile = await profileService.getProfile(userId);
       setProfile(profile);
+
       const links = await linksService.getLinks(userId);
       const orginalLinks = JSON.parse(links.links);
       setLinks(orginalLinks);
@@ -98,7 +99,7 @@ const Preview = () => {
           src={
             profile
               ? profileService.getFilePreview(profile?.profileImage)
-              : "https://via.placeholder.com/100"
+              : "https://placehold.co/100"
           }
           alt="Profile Placeholder"
           className="w-24 h-24 rounded-full mx-auto mb-6 object-cover border-4 border-purple-600"

@@ -8,7 +8,7 @@ const EditProfile = () => {
     <div className="w-full bg-slate-100 py-4">
       <Header />
 
-      <div className="w-full md:max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center relative mt-5 gap-6">
+      <div className="w-full md:max-w-7xl mx-auto flex flex-col md:flex-row justify-between  relative mt-5 gap-6">
         <Image />
 
         <ProfileForm />
